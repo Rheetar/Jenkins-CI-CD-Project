@@ -1,54 +1,38 @@
 pipeline {
-    agent {
-        label 'buildserver'
+    agent any
+    tools {
+        maven 'Maven' // Use the name you specified in Jenkins Global Tool Configuration
     }
+    environment {
+        // Define your deployment credentials id
+        // This should be pre-configured in Jenkins credentials store
+        TOMCAT_CREDENTIALS_ID = 'tomcat-deployer-credentials'
+    }
+
     stages {
-        stage('Checkout') {
-            steps {
-                echo 'Checking out source code'
-                checkout scm
-            }
-        }
         stage('Build') {
             steps {
-                echo 'Building the application'
-                // Define build steps here
-                sh '/opt/apache-maven/bin/mvn clean package'
+                // Build your project with Maven
+                sh 'mvn clean package'
             }
         }
+
         stage('Test') {
             steps {
-                echo 'Running tests'
-                // Define test steps here
+                // Run your tests
                 sh 'mvn test'
-                stash (name: 'Jenkins-CI-CD-Project', includes: "target/*.war")
             }
         }
+
         stage('Deploy') {
-            agent {
-                label 'tomcat1'
+            steps {
+                script {
+                    // Deploy to Tomcat manually using Curl
+
+                    sh "curl --upload-file ./target/*.war 'http://admin:admin@3.95.156.67:8081/manager/text/deploy?path=/WebAppCal&update=true'"
+
+                }
             }
-            steps {echo 'Deploying the application'
-        // Define deployment steps here
-        unstash 'Jenkins-CI-CD-Project'
-        sh "~/apache-tomcat-7.0.94/bin/startup.sh"
-        sh "sudo rm -rf ~/apache*/webapps/*.war"
-        sh "sudo mv target/*.war ~/apache*/webapps/"
-        sh "sudo systemctl daemon-reload"
-        sh "~/apache-tomcat-7.0.94/bin/startup.sh &" // Using nohup to run Tomcat in the background
-            }
-        }
-    }
-    post {
-        success {
-            mail to: "blessingritaa@gmail.com",
-            subject: "Jenkins-CI-CD-Project Successful",
-            body: "Jenkins-CI-CD-Project was successfully built, tested, and deployed"
-        }
-        failure {
-            mail to: "blessingritaa@gmail.com",
-            subject: "Jenkins-CI-CD-Project Failed",
-            body: "Jenkins-CI-CD-Project failed, please investigate"
         }
     }
 }
