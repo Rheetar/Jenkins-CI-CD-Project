@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'build-server'
+        label 'buildserver'
     }
     stages {
         stage('Checkout') {
@@ -26,7 +26,7 @@ pipeline {
         }
         stage('Deploy') {
             agent {
-                label 'deploy-server'
+                label 'tomcat'
             }
             steps {
                 echo 'Deploying the application'
@@ -41,12 +41,12 @@ pipeline {
     }
     post {
         success {
-            mail to: "towehcorina@gmail.com",
+            mail to: "blessingritaa@gmail.com",
             subject: "Jenkins CI-CD Successful",
             body: "Jenkins CI-CD was successfully built, tested, and deployed"
         }
         failure {
-            mail to: "towehcorina@gmail.com",
+            mail to: "blessingritaa@gmail.com",
             subject: "Jenkins CI-CD Failed",
             body: "Jenkins CI-CD failed, please investigate"
         }
