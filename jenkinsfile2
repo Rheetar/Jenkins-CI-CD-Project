@@ -25,7 +25,7 @@ pipeline {
                 script {
                     // Deploy to Tomcat using credentials stored in Jenkins
                     withCredentials([usernamePassword(credentialsId: TOMCAT_CREDENTIALS_ID, passwordVariable: 'TOMCAT_PASSWORD', usernameVariable: 'TOMCAT_USERNAME')]) {
-                        sh "curl --upload-file ./target/*.war 'http://${TOMCAT_USERNAME}:${TOMCAT_PASSWORD}@3.93.58.168:8081/manager/text/deploy?path=/WebAppCal&update=true'"
+                        sh "curl --upload-file ./target/*.war 'http://robot:robot@3.93.58.168:8081/manager/text/deploy?path=/WebAppCal&update=true'"
                     }
                 }
             }
