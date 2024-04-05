@@ -21,7 +21,7 @@ pipeline {
                 echo 'Running tests'
                 // Define test steps here
                 sh 'mvn test'
-                stash (name: 'Jenkins CI-CD', includes: "target/*.war")
+                stash (name: 'Jenkins-CI-CD-Project', includes: "target/*.war")
             }
         }
         stage('Deploy') {
@@ -31,7 +31,7 @@ pipeline {
             steps {
                 echo 'Deploying the application'
                 // Define deployment steps here
-                unstash 'Jenkins CI-CD'
+                unstash 'Jenkins-CI-CD-Project'
                 sh "sudo rm -rf ~/apache*/webapps/*.war"
                 sh "sudo mv target/*.war ~/apache*/webapps/"
                 sh "sudo systemctl daemon-reload"
@@ -42,13 +42,13 @@ pipeline {
     post {
         success {
             mail to: "blessingritaa@gmail.com",
-            subject: "Jenkins CI-CD Successful",
-            body: "Jenkins CI-CD was successfully built, tested, and deployed"
+            subject: "Jenkins-CI-CD-Project Successful",
+            body: "Jenkins-CI-CD-Project was successfully built, tested, and deployed"
         }
         failure {
             mail to: "blessingritaa@gmail.com",
-            subject: "Jenkins CI-CD Failed",
-            body: "Jenkins CI-CD failed, please investigate"
+            subject: "Jenkins-CI-CD-Project Failed",
+            body: "Jenkins-CI-CD-Project failed, please investigate"
         }
     }
 }
