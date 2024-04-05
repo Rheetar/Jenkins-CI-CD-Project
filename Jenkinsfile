@@ -1,12 +1,12 @@
 pipeline {
     agent any
     tools {
-        maven 'Maven' // Use the name you specified in Jenkins Global Tool Configuration
+        maven 'maven' // Use the name you specified in Jenkins Global Tool Configuration
     }
     environment {
         // Define your deployment credentials id
         // This should be pre-configured in Jenkins credentials store
-        TOMCAT_CREDENTIALS_ID = 'tomcat-deployer-credentials'
+        TOMCAT_CREDENTIALS_ID = 'tomcat'
     }
 
     stages {
@@ -29,7 +29,7 @@ pipeline {
                 script {
                     // Deploy to Tomcat manually using Curl
 
-                    sh "curl --upload-file ./target/*.war 'http://admin:admin@3.95.156.67:8081/manager/text/deploy?path=/WebAppCal&update=true'"
+                    sh "curl --upload-file ./target/*.war 'http://robot:robot@3.93.58.168:8081/manager/text/deploy?path=/WebAppCal&update=true'"
 
                 }
             }
