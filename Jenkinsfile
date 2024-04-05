@@ -1,5 +1,7 @@
 pipeline {
     agent any
+     label 'buildserver'
+    }
 
     environment {
         MAVEN_HOME = tool 'Maven' // Assumes that you have configured Maven tool in Jenkins
@@ -24,7 +26,6 @@ pipeline {
     }
 
     post {
-        always {
             // Clean up actions (if any)
         }
         success {
