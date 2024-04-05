@@ -2,25 +2,30 @@ pipeline {
     agent any
      label 'buildserver'
     }
-
-    environment {
-        MAVEN_HOME = tool 'Maven' // Assumes that you have configured Maven tool in Jenkins
-    }
+    
 
     stages {
         stage('Build') {
             steps {
-                sh "${env.MAVEN_HOME}/bin/mvn clean package" // Build the Maven project
+                sh "${MAVEN_HOME}/opt/apache-maven-3.9.6/bin/mvn clean package" // Build the application
             }
         }
         stage('Test') {
             steps {
-                sh "${env.MAVEN_HOME}/bin/mvn test" // Run tests
+                sh "${MAVEN_HOME}/bin/mvn test" // Run tests
+                  stash (name: 'Jenkins-CI-CD-Project', includes: "target/*.war")
             }
         }
         stage('Deploy') {
+            agent {
+                label 'tomcat1'
             steps {
-                sh "${env.MAVEN_HOME}/bin/mvn deploy" // Deploy the WAR file
+                sh "${MAVEN_HOME}/bin/mvn deploy" // Deploy the application
+                sh "~/apache-tomcat-7.0.94/bin/startup.sh"
+        sh "sudo rm -rf ~/apache*/webapps/*.war"
+        sh "sudo mv target/*.war ~/apache*/webapps/"
+        sh "sudo systemctl daemon-reload"
+        sh "~/apache-tomcat-7.0.94/bin/startup.sh &" // Using nohup to run Tomcat in the background
             }
         }
     }
