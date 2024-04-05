@@ -33,13 +33,10 @@ pipeline {
                 // Define deployment steps here
                 unstash 'Jenkins-CI-CD-Project'
                 sh "~/apache-tomcat-7.0.94/bin/startup.sh"
-                sh "sh sudo rm -rf ~/apache*/webapps/*.war"
-                sh "sudo mv target/*.war ~/apache*/webapps/"
-                sh "sudo systemctl daemon-reload"
-                // sh "~/apache-tomcat-7.0.94/bin/shutdown.sh"
-                sh "~/apache-tomcat-7.0.94/bin/startup.sh"
-                sh '/usr/bin/nohup ~/apache*/bin/startup.sh &'
-
+        sh "sh sudo rm -rf ~/apache*/webapps/*.war"
+        sh "sudo mv target/*.war ~/apache*/webapps/"
+        sh "sudo systemctl daemon-reload"
+        sh "~/apache-tomcat-7.0.94/bin/startup.sh &" // Using nohup to run Tomcat in the background
             }
         }
     }
