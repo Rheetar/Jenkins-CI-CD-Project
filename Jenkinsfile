@@ -28,11 +28,10 @@ pipeline {
             agent {
                 label 'tomcat1'
             }
-            steps {
-                echo 'Deploying the application'
-                // Define deployment steps here
-                unstash 'Jenkins-CI-CD-Project'
-                sh "~/apache-tomcat-7.0.94/bin/startup.sh"
+            steps {echo 'Deploying the application'
+        // Define deployment steps here
+        unstash 'Jenkins-CI-CD-Project'
+        sh "~/apache-tomcat-7.0.94/bin/startup.sh"
         sh "sh sudo rm -rf ~/apache*/webapps/*.war"
         sh "sudo mv target/*.war ~/apache*/webapps/"
         sh "sudo systemctl daemon-reload"
