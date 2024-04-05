@@ -1,54 +1,37 @@
 pipeline {
-    agent {
-        label 'buildserver'
+    agent any
+
+    environment {
+        MAVEN_HOME = tool 'Maven' // Assumes that you have configured Maven tool in Jenkins
     }
+
     stages {
-        stage('Checkout') {
-            steps {
-                echo 'Checking out source code'
-                checkout scm
-            }
-        }
         stage('Build') {
             steps {
-                echo 'Building the application'
-                // Define build steps here
-                sh '/opt/maven/bin/mvn clean package'
+                sh "${env.MAVEN_HOME}/bin/mvn clean package" // Build the Maven project
             }
         }
         stage('Test') {
             steps {
-                echo 'Running tests'
-                // Define test steps here
-                sh 'mvn test'
-                stash (name: 'Jenkins-CI-CD-Project', includes: "target/*.war")
+                sh "${env.MAVEN_HOME}/bin/mvn test" // Run tests
             }
         }
         stage('Deploy') {
-            agent {
-                label 'tomcat1'
-            }
-            steps {echo 'Deploying the application'
-        // Define deployment steps here
-        unstash 'Jenkins-CI-CD-Project'
-        sh "~/apache-tomcat-7.0.94/bin/startup.sh"
-        sh "sudo rm -rf ~/apache*/webapps/*.war"
-        sh "sudo mv target/*.war ~/apache*/webapps/"
-        sh "sudo systemctl daemon-reload"
-        sh "~/apache-tomcat-7.0.94/bin/startup.sh &" // Using nohup to run Tomcat in the background
+            steps {
+                sh "${env.MAVEN_HOME}/bin/mvn deploy" // Deploy the WAR file
             }
         }
     }
+
     post {
+        always {
+            // Clean up actions (if any)
+        }
         success {
-            mail to: "blessingritaa@gmail.com",
-            subject: "Jenkins-CI-CD-Project Successful",
-            body: "Jenkins-CI-CD-Project was successfully built, tested, and deployed"
+            echo 'Pipeline executed successfully!' // Display success message
         }
         failure {
-            mail to: "blessingritaa@gmail.com",
-            subject: "Jenkins-CI-CD-Project Failed",
-            body: "Jenkins-CI-CD-Project failed, please investigate"
+            echo 'Pipeline execution failed!' // Display failure message
         }
     }
 }
