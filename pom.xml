@@ -15,21 +15,21 @@
       <scope>test</scope>
     </dependency>
     <!-- https://mvnrepository.com/artifact/javax.servlet/servlet-api -->
-<dependency>
-    <groupId>javax.servlet</groupId>
-    <artifactId>servlet-api</artifactId>
-    <version>2.5</version>
-</dependency>
-</dependencies>
-<distributionManagement>
-  <repository>
-    <id>releases</id>
-        <url>http://52.204.135.48:8081/nexus/content/repositories/releases</url>
-  </repository>
-</distributionManagement>
-</project>
-<properties>
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.5</version>
+    </dependency>
+  </dependencies>
+  <distributionManagement>
+    <repository>
+      <id>releases</id>
+      <url>http://52.204.135.48:8081/nexus/content/repositories/releases</url>
+    </repository>
+  </distributionManagement>
+  <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-</properties>
+  </properties>
+</project>
 
