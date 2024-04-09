@@ -1,39 +1,52 @@
 pipeline {
-    agent any
-    tools {
-        maven 'Maven' // Use the name you specified in Jenkins Global Tool Configuration
+  agent none
+  stages {
+    stage('Build') {
+      agent {
+        label 'node-buildserver'
+      }
+      steps {
+        echo 'Building the application'
+        //Define build steps here
+        sh '/opt/maven/bin/mvn clean package'
+      }
     }
-    environment {
-        // Define your deployment credentials id
-        // This should be pre-configured in Jenkins credentials store
-        TOMCAT_CREDENTIALS_ID = 'tomcat-deployer-credentials'
+    stage('Test') {
+      agent {
+        label 'node-buildsrever'
+      }
+    steps {
+      echo 'Running tests'
+      //Define test steps here
+      sh 'mvn test'
+      stash (name: 'Jenkins-ci-cd-Project', includes: "target/*war")
     }
-
-    stages {
-        stage('Build') {
-            steps {
-                // Build your project with Maven
-                sh 'mvn clean package'
-            }
+    }
+    stage('Deploy') {
+      agent {
+        label 'node-tomcat'
+      }
+      steps {
+        echo 'Deploying the application'
+        //Define deployment steps here
+        unstash 'jenkins-ci-cd-Project'
+        sh "sudo rm -rf ~/apache*/webapp/*.war"
+        sh "sudo mv target/*.war ~/apache*/webapps/"
+        sh "sudo systemctl daemon-reload"
+        sh "sudo ~/apache-tomcat-7.0.94/bin/shutdown.sh && sudo ~/apache-tomcat-7.0.94/bin/startup.sh"
         }
-
-        stage('Test') {
-            steps {
-                // Run your tests
-                sh 'mvn test'
-            }
         }
-
-        stage('Deploy') {
-            steps {
-                script {
-                    // Deploy to Tomcat manually using Curl
-
-                    sh "curl --upload-file ./target/*.war 'http://admin:admin@3.95.156.67:8081/manager/text/deploy?path=/WebAppCal&update=true'"
-
-                }
-            }
+    }
+ post {
+        always {
+            // Send email notification on completion
+            emailext (
+                body: "Check console output at $BUILD_URL to see results,",           
+                subject: "Jenkins Build ${currentBuild.currentResult} jenkins-ci-cd-Project",
+                to: "blessingritaa@gmail.com", 
+                mimeType: 'text/html'
+            )
         }
     }
 }
-
+   
